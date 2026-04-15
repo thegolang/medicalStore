@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{.title}}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    [x-cloak] { display: none !important; }
+    .sidebar-link.active { @apply bg-blue-700 text-white; }
+    .htmx-indicator { opacity: 0; transition: opacity 200ms ease-in; }
+    .htmx-request .htmx-indicator { opacity: 1; }
+    .htmx-request.htmx-indicator { opacity: 1; }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans" x-data="{ sidebarOpen: true }">
+
+<!-- Top Navbar -->
+<nav class="bg-blue-800 text-white fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-4 shadow-lg">
+  <div class="flex items-center gap-3">
+    <button @click="sidebarOpen = !sidebarOpen" class="text-white focus:outline-none p-1 rounded hover:bg-blue-700">
+      <i class="fas fa-bars text-xl"></i>
+    </button>
+    <div class="flex items-center gap-2">
+      <i class="fas fa-pills text-2xl text-blue-300"></i>
+      <span class="text-xl font-bold tracking-wide">MedStore Admin</span>
+    </div>
+  </div>
+  <div class="flex items-center gap-4">
+    <span class="text-sm text-blue-200 hidden sm:block">
+      <i class="fas fa-user-circle mr-1"></i>
+      {{.fullName}} <span class="bg-blue-600 px-2 py-0.5 rounded text-xs ml-1">{{.role}}</span>
+    </span>
+    <a href="/profile" class="hover:text-blue-200 text-sm"><i class="fas fa-cog"></i></a>
+    <a href="/logout" class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded text-sm font-medium transition">
+      <i class="fas fa-sign-out-alt mr-1"></i>Logout
+    </a>
+  </div>
+</nav>
+
+<div class="flex pt-16 min-h-screen">
+  <!-- Sidebar -->
+  <aside :class="sidebarOpen ? 'w-64' : 'w-16'" class="bg-blue-900 text-white fixed top-16 left-0 bottom-0 z-40 transition-all duration-300 overflow-hidden flex flex-col">
+    <nav class="flex-1 py-4 space-y-1 px-2 overflow-y-auto">
+
+      <a href="/" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-700 transition {{if eq .nav "dashboard"}}bg-blue-700{{end}}">
+        <i class="fas fa-tachometer-alt w-5 text-center text-blue-300"></i>
+        <span :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0'" class="transition-all duration-300 font-medium whitespace-nowrap">Dashboard</span>
+      </a>
+
+      <div class="px-3 py-1" :class="sidebarOpen ? 'block' : 'hidden'">
+        <p class="text-xs text-blue-400 uppercase tracking-wider font-semibold">Inventory</p>
+      </div>
+
+      <a href="/medicines" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-700 transition {{if eq .nav "medicines"}}bg-blue-700{{end}}">
+        <i class="fas fa-pills w-5 text-center text-blue-300"></i>
+        <span :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0'" class="transition-all duration-300 whitespace-nowrap">Medicines</span>
+      </a>
+
+      <a href="/categories" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-700 transition {{if eq .nav "categories"}}bg-blue-700{{end}}">
+        <i class="fas fa-tags w-5 text-center text-blue-300"></i>
+        <span :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0'" class="transition-all duration-300 whitespace-nowrap">Categories</span>
+      </a>
+
+      <a href="/suppliers" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-700 transition {{if eq .nav "suppliers"}}bg-blue-700{{end}}">
+        <i class="fas fa-truck w-5 text-center text-blue-300"></i>
+        <span :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0'" class="transition-all duration-300 whitespace-nowrap">Suppliers</span>
+      </a>
+
+      <div class="px-3 py-1" :class="sidebarOpen ? 'block' : 'hidden'">
+        <p class="text-xs text-blue-400 uppercase tracking-wider font-semibold">Transactions</p>
+      </div>
+
+      <a href="/sales" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-700 transition {{if eq .nav "sales"}}bg-blue-700{{end}}">
+        <i class="fas fa-shopping-cart w-5 text-center text-blue-300"></i>
+        <span :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0'" class="transition-all duration-300 whitespace-nowrap">Sales / Billing</span>
+      </a>
+
+      <a href="/purchases" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-700 transition {{if eq .nav "purchases"}}bg-blue-700{{end}}">
+        <i class="fas fa-file-invoice w-5 text-center text-blue-300"></i>
+        <span :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0'" class="transition-all duration-300 whitespace-nowrap">Purchases</span>
+      </a>
+
+      <div class="px-3 py-1" :class="sidebarOpen ? 'block' : 'hidden'">
+        <p class="text-xs text-blue-400 uppercase tracking-wider font-semibold">Analytics</p>
+      </div>
+
+      <a href="/reports" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-700 transition {{if eq .nav "reports"}}bg-blue-700{{end}}">
+        <i class="fas fa-chart-bar w-5 text-center text-blue-300"></i>
+        <span :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0'" class="transition-all duration-300 whitespace-nowrap">Reports</span>
+      </a>
+
+      {{if eq .role "admin"}}
+      <div class="px-3 py-1" :class="sidebarOpen ? 'block' : 'hidden'">
+        <p class="text-xs text-blue-400 uppercase tracking-wider font-semibold">Admin</p>
+      </div>
+      <a href="/users" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-blue-700 transition {{if eq .nav "users"}}bg-blue-700{{end}}">
+        <i class="fas fa-users w-5 text-center text-blue-300"></i>
+        <span :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0'" class="transition-all duration-300 whitespace-nowrap">Users</span>
+      </a>
+      {{end}}
+    </nav>
+
+    <div class="px-3 py-4 border-t border-blue-700" :class="sidebarOpen ? 'block' : 'hidden'">
+      <p class="text-xs text-blue-400 text-center">MedStore v1.0</p>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main :class="sidebarOpen ? 'ml-64' : 'ml-16'" class="flex-1 transition-all duration-300 p-6">
+    {{template "content" .}}
+  </main>
+</div>
+
+<script>
+  // HTMX global config
+  document.body.addEventListener('htmx:configRequest', function(evt) {
+    evt.detail.headers['X-Requested-With'] = 'XMLHttpRequest';
+  });
+</script>
+</body>
+</html>

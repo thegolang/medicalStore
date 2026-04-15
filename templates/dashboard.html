@@ -1,0 +1,194 @@
+{{template "layout.html" .}}
+
+{{define "content"}}
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
+      <p class="text-gray-500 text-sm mt-0.5">Welcome back, {{.fullName}}</p>
+    </div>
+    <div class="text-sm text-gray-500">
+      <i class="fas fa-calendar mr-1"></i>
+      <span id="current-date"></span>
+    </div>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 font-medium">Total Medicines</p>
+          <p class="text-3xl font-bold text-gray-800 mt-1">{{.stats.TotalMedicines}}</p>
+        </div>
+        <div class="bg-blue-100 p-3 rounded-full">
+          <i class="fas fa-pills text-blue-600 text-xl"></i>
+        </div>
+      </div>
+      <a href="/medicines" class="text-xs text-blue-600 hover:underline mt-3 block">View all medicines &rarr;</a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-yellow-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 font-medium">Low Stock</p>
+          <p class="text-3xl font-bold text-gray-800 mt-1">{{.stats.LowStockCount}}</p>
+        </div>
+        <div class="bg-yellow-100 p-3 rounded-full">
+          <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+        </div>
+      </div>
+      <a href="/medicines?stock=low" class="text-xs text-yellow-600 hover:underline mt-3 block">View low stock &rarr;</a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 font-medium">Today's Revenue</p>
+          <p class="text-3xl font-bold text-gray-800 mt-1">&#8377;{{printf "%.2f" .stats.TodaySales}}</p>
+        </div>
+        <div class="bg-green-100 p-3 rounded-full">
+          <i class="fas fa-rupee-sign text-green-600 text-xl"></i>
+        </div>
+      </div>
+      <p class="text-xs text-green-600 mt-3">{{.stats.TodayOrders}} orders today</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-red-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 font-medium">Expired / Expiring</p>
+          <p class="text-3xl font-bold text-gray-800 mt-1">{{.stats.ExpiredCount}} / {{.stats.ExpiringSoon}}</p>
+        </div>
+        <div class="bg-red-100 p-3 rounded-full">
+          <i class="fas fa-calendar-times text-red-600 text-xl"></i>
+        </div>
+      </div>
+      <a href="/medicines?stock=expired" class="text-xs text-red-600 hover:underline mt-3 block">View expired &rarr;</a>
+    </div>
+  </div>
+
+  <!-- Second Row -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-purple-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 font-medium">30-Day Revenue</p>
+          <p class="text-2xl font-bold text-gray-800 mt-1">&#8377;{{printf "%.2f" .stats.MonthSales}}</p>
+        </div>
+        <div class="bg-purple-100 p-3 rounded-full">
+          <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+        </div>
+      </div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-indigo-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 font-medium">Suppliers</p>
+          <p class="text-2xl font-bold text-gray-800 mt-1">{{.stats.TotalSuppliers}}</p>
+        </div>
+        <div class="bg-indigo-100 p-3 rounded-full">
+          <i class="fas fa-truck text-indigo-600 text-xl"></i>
+        </div>
+      </div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-teal-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 font-medium">Categories</p>
+          <p class="text-2xl font-bold text-gray-800 mt-1">{{.stats.TotalCategories}}</p>
+        </div>
+        <div class="bg-teal-100 p-3 rounded-full">
+          <i class="fas fa-tags text-teal-600 text-xl"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tables Row -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Sales -->
+    <div class="bg-white rounded-xl shadow-sm">
+      <div class="flex items-center justify-between px-5 py-4 border-b">
+        <h2 class="font-semibold text-gray-800"><i class="fas fa-shopping-cart mr-2 text-green-500"></i>Recent Sales</h2>
+        <a href="/sales" class="text-xs text-blue-600 hover:underline">View all</a>
+      </div>
+      <div class="divide-y">
+        {{range .stats.RecentSales}}
+        <div class="px-5 py-3 flex items-center justify-between hover:bg-gray-50">
+          <div>
+            <p class="text-sm font-medium text-gray-800">{{.InvoiceNumber}}</p>
+            <p class="text-xs text-gray-500">{{.CustomerName}} &bull; {{.PaymentMethod}}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-sm font-bold text-green-600">&#8377;{{printf "%.2f" .GrandTotal}}</p>
+            <p class="text-xs text-gray-400">{{.CreatedAt.Format "02 Jan 15:04"}}</p>
+          </div>
+        </div>
+        {{else}}
+        <div class="px-5 py-8 text-center text-gray-400 text-sm">No sales yet today</div>
+        {{end}}
+      </div>
+    </div>
+
+    <!-- Low Stock Alert -->
+    <div class="bg-white rounded-xl shadow-sm">
+      <div class="flex items-center justify-between px-5 py-4 border-b">
+        <h2 class="font-semibold text-gray-800"><i class="fas fa-exclamation-triangle mr-2 text-yellow-500"></i>Low Stock Alert</h2>
+        <a href="/medicines?stock=low" class="text-xs text-blue-600 hover:underline">View all</a>
+      </div>
+      <div class="divide-y">
+        {{range .stats.LowStockItems}}
+        <div class="px-5 py-3 flex items-center justify-between hover:bg-gray-50">
+          <div>
+            <p class="text-sm font-medium text-gray-800">{{.Name}}</p>
+            <p class="text-xs text-gray-500">{{.CategoryName}} &bull; Min: {{.MinStockLevel}}</p>
+          </div>
+          <div class="text-right">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+              {{if eq .Quantity 0}}bg-red-100 text-red-800{{else}}bg-yellow-100 text-yellow-800{{end}}">
+              {{.Quantity}} left
+            </span>
+          </div>
+        </div>
+        {{else}}
+        <div class="px-5 py-8 text-center text-gray-400 text-sm">
+          <i class="fas fa-check-circle text-green-500 text-2xl mb-2"></i>
+          <p>All stock levels are healthy</p>
+        </div>
+        {{end}}
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="bg-white rounded-xl shadow-sm p-5">
+    <h2 class="font-semibold text-gray-800 mb-4"><i class="fas fa-bolt mr-2 text-yellow-500"></i>Quick Actions</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <a href="/sales/new" class="flex flex-col items-center gap-2 p-4 bg-green-50 hover:bg-green-100 rounded-xl transition text-center">
+        <i class="fas fa-cash-register text-2xl text-green-600"></i>
+        <span class="text-sm font-medium text-green-700">New Sale</span>
+      </a>
+      <a href="/medicines/new" class="flex flex-col items-center gap-2 p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition text-center">
+        <i class="fas fa-plus-circle text-2xl text-blue-600"></i>
+        <span class="text-sm font-medium text-blue-700">Add Medicine</span>
+      </a>
+      <a href="/purchases/new" class="flex flex-col items-center gap-2 p-4 bg-purple-50 hover:bg-purple-100 rounded-xl transition text-center">
+        <i class="fas fa-file-invoice text-2xl text-purple-600"></i>
+        <span class="text-sm font-medium text-purple-700">Purchase Order</span>
+      </a>
+      <a href="/reports" class="flex flex-col items-center gap-2 p-4 bg-orange-50 hover:bg-orange-100 rounded-xl transition text-center">
+        <i class="fas fa-chart-bar text-2xl text-orange-600"></i>
+        <span class="text-sm font-medium text-orange-700">View Reports</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-IN', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+</script>
+{{end}}

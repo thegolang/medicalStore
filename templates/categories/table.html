@@ -1,0 +1,56 @@
+<table class="w-full text-sm">
+  <thead class="bg-gray-50 border-b">
+    <tr>
+      <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
+      <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Description</th>
+      <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+      {{if eq .role "admin"}}
+      <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+      {{end}}
+    </tr>
+  </thead>
+  <tbody class="divide-y divide-gray-100">
+    {{range .categories}}
+    <tr class="hover:bg-gray-50">
+      <td class="px-4 py-3 font-medium text-gray-800">{{.Name}}</td>
+      <td class="px-4 py-3 text-gray-500">{{.Description}}</td>
+      <td class="px-4 py-3">
+        {{if .Active}}
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+        {{else}}
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Inactive</span>
+        {{end}}
+      </td>
+      {{if eq $.role "admin"}}
+      <td class="px-4 py-3 text-right">
+        <div class="flex items-center justify-end gap-2">
+          <button
+            hx-post="/categories/{{.ID.Hex}}"
+            hx-target="#categories-table"
+            hx-swap="innerHTML"
+            hx-vals='{"name":"{{.Name}}","description":"{{.Description}}","active":"{{if .Active}}false{{else}}true{{end}}"}'
+            class="text-xs px-2.5 py-1 rounded border {{if .Active}}border-orange-300 text-orange-600 hover:bg-orange-50{{else}}border-green-300 text-green-600 hover:bg-green-50{{end}} transition">
+            {{if .Active}}Deactivate{{else}}Activate{{end}}
+          </button>
+          <button
+            hx-delete="/categories/{{.ID.Hex}}"
+            hx-target="#categories-table"
+            hx-swap="innerHTML"
+            hx-confirm="Delete '{{.Name}}'? This cannot be undone."
+            class="text-red-600 hover:text-red-800 p-1.5 rounded hover:bg-red-50 transition">
+            <i class="fas fa-trash text-xs"></i>
+          </button>
+        </div>
+      </td>
+      {{end}}
+    </tr>
+    {{else}}
+    <tr>
+      <td colspan="4" class="px-4 py-10 text-center text-gray-400">
+        <i class="fas fa-tags text-3xl mb-2"></i>
+        <p>No categories yet. Add one above.</p>
+      </td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>

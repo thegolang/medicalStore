@@ -1,0 +1,68 @@
+{{template "layout.html" .}}
+
+{{define "content"}}
+<div class="max-w-xl mx-auto space-y-5">
+  <div class="flex items-center gap-3">
+    <a href="/users" class="text-gray-500 hover:text-gray-700 p-1.5 rounded hover:bg-gray-100">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    <h1 class="text-2xl font-bold text-gray-800">{{.title}}</h1>
+  </div>
+
+  <form method="POST" action="{{if .isNew}}/users{{else}}/users/{{.editUser.ID.Hex}}{{end}}"
+    class="bg-white rounded-xl shadow-sm p-6 space-y-4">
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name <span class="text-red-500">*</span></label>
+        <input type="text" name="full_name" required value="{{.editUser.FullName}}"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="John Doe" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Username <span class="text-red-500">*</span></label>
+        <input type="text" name="username" required value="{{.editUser.Username}}" {{if not .isNew}}readonly{{end}}
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 {{if not .isNew}}bg-gray-50{{end}}"
+          placeholder="john_doe" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input type="email" name="email" value="{{.editUser.Email}}"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="john@example.com" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Password {{if not .isNew}}<span class="text-gray-400 text-xs">(leave blank to keep current)</span>{{else}}<span class="text-red-500">*</span>{{end}}
+        </label>
+        <input type="password" name="password" {{if .isNew}}required{{end}} minlength="6"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Min 6 characters" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Role <span class="text-red-500">*</span></label>
+        <select name="role" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="cashier" {{if eq .editUser.Role "cashier"}}selected{{end}}>Cashier</option>
+          <option value="manager" {{if eq .editUser.Role "manager"}}selected{{end}}>Manager</option>
+          <option value="admin" {{if eq .editUser.Role "admin"}}selected{{end}}>Admin</option>
+        </select>
+      </div>
+      {{if not .isNew}}
+      <div class="flex items-center gap-2 pt-5">
+        <input type="hidden" name="active" value="false" />
+        <input type="checkbox" name="active" value="true" id="active" {{if .editUser.Active}}checked{{end}}
+          class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+        <label for="active" class="text-sm font-medium text-gray-700">Active</label>
+      </div>
+      {{end}}
+    </div>
+
+    <div class="flex justify-end gap-3 pt-2">
+      <a href="/users" class="px-5 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Cancel</a>
+      <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition">
+        <i class="fas fa-save mr-1"></i> {{if .isNew}}Create User{{else}}Update User{{end}}
+      </button>
+    </div>
+  </form>
+</div>
+{{end}}

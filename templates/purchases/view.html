@@ -1,0 +1,92 @@
+{{template "layout.html" .}}
+
+{{define "content"}}
+<div class="max-w-2xl mx-auto space-y-5">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="/purchases" class="text-gray-500 hover:text-gray-700 p-1.5 rounded hover:bg-gray-100">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <h1 class="text-2xl font-bold text-gray-800">Purchase Order</h1>
+    </div>
+    <button onclick="window.print()" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+      <i class="fas fa-print"></i> Print
+    </button>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm p-6">
+    <div class="flex items-start justify-between mb-6 pb-6 border-b">
+      <div>
+        <p class="text-2xl font-bold text-purple-600 font-mono">{{.purchase.PONumber}}</p>
+        <p class="text-sm text-gray-500 mt-1">{{.purchase.CreatedAt.Format "02 Jan 2006, 15:04"}}</p>
+        <p class="text-xs text-gray-400 mt-0.5">Ordered by: {{.purchase.OrderedBy}}</p>
+      </div>
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+        {{if eq .purchase.Status "pending"}}bg-yellow-100 text-yellow-800
+        {{else if eq .purchase.Status "received"}}bg-green-100 text-green-800
+        {{else}}bg-red-100 text-red-800{{end}}">
+        {{.purchase.Status}}
+      </span>
+    </div>
+
+    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+      <p class="text-xs text-gray-500 font-semibold uppercase mb-1">Supplier</p>
+      <p class="font-semibold text-gray-800">{{.purchase.SupplierName}}</p>
+    </div>
+
+    <table class="w-full text-sm mb-6">
+      <thead>
+        <tr class="bg-purple-600 text-white">
+          <th class="px-3 py-2 text-left rounded-tl-lg">#</th>
+          <th class="px-3 py-2 text-left">Medicine</th>
+          <th class="px-3 py-2 text-center">Qty</th>
+          <th class="px-3 py-2 text-left">Batch</th>
+          <th class="px-3 py-2 text-left">Expiry</th>
+          <th class="px-3 py-2 text-right">Unit Price</th>
+          <th class="px-3 py-2 text-right rounded-tr-lg">Total</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y">
+        {{range $i, $item := .purchase.Items}}
+        <tr class="hover:bg-gray-50">
+          <td class="px-3 py-2.5 text-gray-500">{{add $i 1}}</td>
+          <td class="px-3 py-2.5 font-medium text-gray-800">{{$item.MedicineName}}</td>
+          <td class="px-3 py-2.5 text-center text-gray-600">{{$item.Quantity}}</td>
+          <td class="px-3 py-2.5 text-gray-600 text-xs">{{$item.BatchNumber}}</td>
+          <td class="px-3 py-2.5 text-gray-600 text-xs">{{$item.ExpiryDate.Format "Jan 2006"}}</td>
+          <td class="px-3 py-2.5 text-right text-gray-600">&#8377;{{printf "%.2f" $item.UnitPrice}}</td>
+          <td class="px-3 py-2.5 text-right font-medium text-gray-800">&#8377;{{printf "%.2f" $item.Total}}</td>
+        </tr>
+        {{end}}
+      </tbody>
+      <tfoot>
+        <tr class="bg-gray-50 font-bold">
+          <td colspan="6" class="px-3 py-3 text-right text-gray-700">Total Amount</td>
+          <td class="px-3 py-3 text-right text-purple-600">&#8377;{{printf "%.2f" .purchase.TotalAmount}}</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    {{if .purchase.Notes}}
+    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-600">
+      <span class="font-medium">Notes:</span> {{.purchase.Notes}}
+    </div>
+    {{end}}
+
+    {{if eq .purchase.Status "pending"}}
+    <div class="flex gap-3 mt-6 pt-6 border-t no-print">
+      <button hx-post="/purchases/{{.purchase.ID.Hex}}/receive"
+        hx-confirm="Mark as received? Stock levels will be updated automatically."
+        class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-lg text-sm font-medium transition">
+        <i class="fas fa-check mr-1"></i> Mark as Received
+      </button>
+      <button hx-post="/purchases/{{.purchase.ID.Hex}}/cancel"
+        hx-confirm="Cancel this purchase order?"
+        class="flex-1 bg-red-100 hover:bg-red-200 text-red-700 py-2.5 rounded-lg text-sm font-medium transition">
+        <i class="fas fa-times mr-1"></i> Cancel Order
+      </button>
+    </div>
+    {{end}}
+  </div>
+</div>
+{{end}}
