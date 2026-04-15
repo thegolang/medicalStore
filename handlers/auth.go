@@ -44,7 +44,7 @@ func Login(c *gin.Context) {
 	err := database.Col("users").FindOne(ctx, bson.M{"username": username, "active": true}).Decode(&user)
 	if err != nil {
 		c.HTML(http.StatusOK, "login.html", gin.H{
-			"error": "Invalid username or password",
+			"error": "Invalid username or password1",
 			"title": "Login - Medical Store",
 		})
 		return
