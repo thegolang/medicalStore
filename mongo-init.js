@@ -13,8 +13,8 @@ db.createCollection('purchases');
 db.users.insertOne({
   username: 'admin',
   email: 'admin@medicalstore.com',
-  // bcrypt hash of "admin123"
-  password: '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+  // bcrypt hash of "admin123" (cost=10)
+  password: '$2a$10$pQUaGo4esLMP6IjpraPwjeIFX6QUi9x57IYU.xnIooAmy15/vqjWi',
   role: 'admin',
   full_name: 'Store Administrator',
   active: true,
