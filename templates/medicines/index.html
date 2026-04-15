@@ -101,7 +101,6 @@
               <div class="text-xs text-gray-400">Buy: &#8377;{{printf "%.2f" .PurchasePrice}}</div>
             </td>
             <td class="px-4 py-3">
-              {{$now := now}}
               <span class="text-sm {{if .IsExpired}}text-red-600 font-medium{{else if .IsExpiringSoon}}text-orange-500 font-medium{{else}}text-gray-600{{end}}">
                 {{.ExpiryDate.Format "02 Jan 2006"}}
               </span>
