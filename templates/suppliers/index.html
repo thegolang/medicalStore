@@ -1,0 +1,77 @@
+{{template "layout.html" .}}
+
+{{define "content"}}
+<div class="space-y-5">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Suppliers</h1>
+      <p class="text-gray-500 text-sm">Manage your medicine suppliers</p>
+    </div>
+    <a href="/suppliers/new" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition">
+      <i class="fas fa-plus"></i> Add Supplier
+    </a>
+  </div>
+
+  <!-- Search -->
+  <div class="bg-white rounded-xl shadow-sm p-4">
+    <form method="GET" action="/suppliers" class="flex gap-3">
+      <div class="flex-1 relative">
+        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+        <input type="text" name="search" value="{{.search}}" placeholder="Search by name, email, contact..."
+          class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Search</button>
+      {{if .search}}<a href="/suppliers" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center">Clear</a>{{end}}
+    </form>
+  </div>
+
+  <!-- Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {{range .suppliers}}
+    <div class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition">
+      <div class="flex items-start justify-between mb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+            <i class="fas fa-truck text-blue-600"></i>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-800">{{.Name}}</h3>
+            <p class="text-xs text-gray-500">{{.City}}</p>
+          </div>
+        </div>
+        {{if .Active}}
+          <span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">Active</span>
+        {{else}}
+          <span class="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Inactive</span>
+        {{end}}
+      </div>
+      <div class="space-y-1.5 text-sm text-gray-600">
+        <p><i class="fas fa-user w-4 text-gray-400 mr-1"></i>{{.ContactPerson}}</p>
+        <p><i class="fas fa-envelope w-4 text-gray-400 mr-1"></i>{{.Email}}</p>
+        <p><i class="fas fa-phone w-4 text-gray-400 mr-1"></i>{{.Phone}}</p>
+        <p><i class="fas fa-map-marker-alt w-4 text-gray-400 mr-1"></i>{{.Address}}</p>
+      </div>
+      <div class="flex gap-2 mt-4 pt-4 border-t">
+        <a href="/suppliers/{{.ID.Hex}}/edit" class="flex-1 text-center py-1.5 border border-blue-300 text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium transition">
+          <i class="fas fa-edit mr-1"></i>Edit
+        </a>
+        <button
+          hx-delete="/suppliers/{{.ID.Hex}}"
+          hx-confirm="Remove supplier '{{.Name}}'?"
+          class="flex-1 py-1.5 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition">
+          <i class="fas fa-trash mr-1"></i>Delete
+        </button>
+      </div>
+    </div>
+    {{else}}
+    <div class="col-span-3 bg-white rounded-xl shadow-sm p-12 text-center text-gray-400">
+      <i class="fas fa-truck text-5xl mb-3"></i>
+      <p class="font-medium text-lg">No suppliers found</p>
+      <p class="text-sm mt-1">
+        <a href="/suppliers/new" class="text-blue-600 hover:underline">Add your first supplier</a>
+      </p>
+    </div>
+    {{end}}
+  </div>
+</div>
+{{end}}
